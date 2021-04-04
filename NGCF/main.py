@@ -50,10 +50,10 @@ if __name__ == '__main__':
         for idx in pbar:
             t1_pre = time()
             users, pos_items, neg_items = data_generator.sample()
-        #     u_g_embeddings, pos_i_g_embeddings, neg_i_g_embeddings = model(users,
-        #                                                                    pos_items,
-        #                                                                    neg_items,
-        #                                                                    drop_flag=args.node_dropout_flag)
+            u_g_embeddings, pos_i_g_embeddings, neg_i_g_embeddings = model(users,
+                                                                           pos_items,
+                                                                           neg_items,
+                                                                           drop_flag=args.node_dropout_flag)
 
         #     batch_loss, batch_mf_loss, batch_emb_loss = model.create_bpr_loss(u_g_embeddings,
         #                                                                       pos_i_g_embeddings,
