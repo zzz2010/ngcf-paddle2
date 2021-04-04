@@ -42,6 +42,7 @@ class NGCF(nn.Module):
         Get sparse adj.
         """
         self.sparse_norm_adj = self._convert_sp_mat_to_sp_tensor(self.norm_adj).to(self.device)
+        self.sparse_norm_adj.stop_gradient=True
 
     def init_weight(self):
         # xavier init
@@ -49,9 +50,9 @@ class NGCF(nn.Module):
 
         embedding_dict =  {
             'user_emb': nn.Parameter(initializer(torch.empty(self.n_user,
-                                                 self.emb_size))),
+                                                 self.emb_size)) ),
             'item_emb': nn.Parameter(initializer(torch.empty(self.n_item,
-                                                 self.emb_size)))
+                                                 self.emb_size)) )
         } 
 
         weight_dict = dict()
@@ -81,9 +82,11 @@ class NGCF(nn.Module):
         v = torch.Tensor(x._values())
 
         i = i[:, dropout_mask]
+  
         v = v[dropout_mask]
-
+        
         out = torch.sparse.FloatTensor(i, v, x.shape).to(x.device)
+ 
         return out * (1. / (1 - rate))
 
     def create_bpr_loss(self, users, pos_items, neg_items):
@@ -106,12 +109,17 @@ class NGCF(nn.Module):
 
     def forward(self, users, pos_items, neg_items, drop_flag=True):
         users=torch.LongTensor(users)
+   
         pos_items=torch.LongTensor(pos_items)
-        neg_items=torch.LongTensor(neg_items)
+        
+        if len(neg_items)>0:
+            neg_items=torch.LongTensor(neg_items)
 
         A_hat = self.sparse_dropout(self.sparse_norm_adj,
                                     self.node_dropout,
                                      self.sparse_norm_adj._nnz()  ) if drop_flag else self.sparse_norm_adj
+ 
+        A_hat.stop_gradient=True
 
         ego_embeddings = torch.cat([self.embedding_dict['user_emb'],
                                     self.embedding_dict['item_emb']], 0)
@@ -119,7 +127,8 @@ class NGCF(nn.Module):
         all_embeddings = [ego_embeddings]
 
         for k in range(len(self.layers)):
-            side_embeddings = torch.sparse.mm(A_hat, ego_embeddings)
+            # side_embeddings = torch.sparse.mm(A_hat, ego_embeddings,max_query_size=1120000000)
+            side_embeddings = torch.sparse.mm_largemem(A_hat, ego_embeddings)
 
             # transformed sum messages of neighbors.
             sum_embeddings = torch.matmul(side_embeddings, self.weight_dict['W_gc_%d' % k]) \
@@ -153,6 +162,9 @@ class NGCF(nn.Module):
         """
         u_g_embeddings = u_g_embeddings[users ]
         pos_i_g_embeddings = i_g_embeddings[pos_items ]
-        neg_i_g_embeddings = i_g_embeddings[neg_items ]
+        if len(neg_items)>0:
+            neg_i_g_embeddings = i_g_embeddings[neg_items ]
+        else:
+            neg_i_g_embeddings=None
 
         return u_g_embeddings, pos_i_g_embeddings, neg_i_g_embeddings

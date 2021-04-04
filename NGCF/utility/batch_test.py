@@ -139,7 +139,7 @@ def test(model, users_to_test, drop_flag=False, batch_test_flag=False):
                 i_start = i_batch_id * i_batch_size
                 i_end = min((i_batch_id + 1) * i_batch_size, ITEM_NUM)
 
-                item_batch = range(i_start, i_end)
+                item_batch = list(range(i_start, i_end))
 
                 if drop_flag == False:
                     u_g_embeddings, pos_i_g_embeddings, _ = model(user_batch,
@@ -161,7 +161,7 @@ def test(model, users_to_test, drop_flag=False, batch_test_flag=False):
 
         else:
             # all-item test
-            item_batch = range(ITEM_NUM)
+            item_batch = list(range(ITEM_NUM))
 
             if drop_flag == False:
                 u_g_embeddings, pos_i_g_embeddings, _ = model(user_batch,
