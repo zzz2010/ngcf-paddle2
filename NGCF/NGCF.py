@@ -127,8 +127,7 @@ class NGCF(nn.Module):
         all_embeddings = [ego_embeddings]
 
         for k in range(len(self.layers)):
-            # side_embeddings = torch.sparse.mm(A_hat, ego_embeddings,max_query_size=1120000000)
-            side_embeddings = torch.sparse.mm_largemem(A_hat, ego_embeddings)
+            side_embeddings = torch.sparse.mm(A_hat, ego_embeddings)
 
             # transformed sum messages of neighbors.
             sum_embeddings = torch.matmul(side_embeddings, self.weight_dict['W_gc_%d' % k]) \
