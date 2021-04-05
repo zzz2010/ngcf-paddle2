@@ -176,11 +176,11 @@ def test(model, users_to_test, drop_flag=False, batch_test_flag=False):
                                                               [],
                                                               drop_flag=True)
                 rate_batch = model.rating(u_g_embeddings, pos_i_g_embeddings).detach().cpu()
-        # del u_g_embeddings, pos_i_g_embeddings
+        del u_g_embeddings, pos_i_g_embeddings
         user_batch_rating_uid = zip(rate_batch.numpy(), user_batch)
         batch_result = pool.map(test_one_user, user_batch_rating_uid)
         count += len(batch_result)
-        # del rate_batch
+        del rate_batch,user_batch_rating_uid
         for re in batch_result:
             result['precision'] += re['precision']/n_test_users
             result['recall'] += re['recall']/n_test_users
