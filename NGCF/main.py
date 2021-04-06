@@ -6,7 +6,7 @@ Created on March 24, 2020
 
 import paddorch as torch
 import paddorch.optim as optim
-
+import sys
 from NGCF import NGCF
 from utility.helper import *
 from utility.batch_test import *
@@ -19,6 +19,7 @@ from visualdl import LogWriter
 if __name__ == '__main__':
 
     args.device = torch.device('0')
+    torch.manual_seed(0)
 
     plain_adj, norm_adj, mean_adj = data_generator.get_adj_mat()
 
@@ -29,6 +30,16 @@ if __name__ == '__main__':
                  data_generator.n_items,
                  norm_adj,
                  args).to(args.device)
+
+    if int(args.pretrain)!=0:
+        import glob
+        import os
+
+        list_of_files = glob.glob(args.weights_path+"/*pdparams") # * means all if need specific format then *.csv
+        if len(list_of_files)>0:
+            model_fn = max(list_of_files, key=os.path.getctime)
+            model.load_state_dict(torch.load(model_fn))
+            print("loaded model file:",model_fn)
 
     t0 = time()
     """
@@ -111,6 +122,14 @@ if __name__ == '__main__':
 
         cur_best_pre_0, stopping_step, should_stop = early_stopping(ret['recall'][0], cur_best_pre_0,
                                                                     stopping_step, expected_order='acc', flag_step=5)
+
+        ###stop if the satisfy the criteria
+        if  "amazon" in args.dataset:
+            if float(ret['recall'][0])>0.0337  and float(ret['ndcg'][0])>0.0261:
+                break
+        if  "yelp" in args.dataset:
+            if float(ret['recall'][0])>0.0579 and float(ret['ndcg'][0])>0.0477:
+                break
 
         # *********************************************************
         # early stopping when cur_best_pre_0 is decreasing for ten successive steps.
