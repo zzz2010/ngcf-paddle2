@@ -11,7 +11,7 @@ from utility.load_data import *
 import multiprocessing
 import heapq
 
-cores = multiprocessing.cpu_count() // 2
+cores = multiprocessing.cpu_count() 
 
 args = parse_args()
 Ks = eval(args.Ks)
