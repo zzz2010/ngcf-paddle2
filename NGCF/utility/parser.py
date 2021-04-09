@@ -42,7 +42,7 @@ def parse_args():
     parser.add_argument('--adj_type', nargs='?', default='norm',
                         help='Specify the type of the adjacency (laplacian) matrix from {plain, norm, mean}.')
 
-    parser.add_argument('--gpu_id', type=int, default=6)
+    parser.add_argument('--gpu_id', type=int, default=0,  help='-1 means cpu')
 
     parser.add_argument('--node_dropout_flag', type=int, default=1,
                         help='0: Disable node dropout, 1: Activate node dropout')
@@ -57,7 +57,7 @@ def parse_args():
     parser.add_argument('--save_flag', type=int, default=0,
                         help='0: Disable model saver, 1: Activate model saver')
 
-    parser.add_argument('--test_flag', nargs='?', default='part',
+    parser.add_argument('--test_flag', nargs='?', default='full',
                         help='Specify the test type from {part, full}, indicating whether the reference is done in mini-batch')
 
     parser.add_argument('--report', type=int, default=0,

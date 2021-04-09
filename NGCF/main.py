@@ -17,7 +17,10 @@ from time import time
 from visualdl import LogWriter
 from paddle import fluid
 if __name__ == '__main__':
-    place= fluid.CUDAPlace(0)
+    if  args.gpu_id<0:
+        place = fluid.CPUPlace( )
+    else:
+        place= fluid.CUDAPlace(args.gpu_id)
     with fluid.dygraph.guard(place=place):
         args.device = torch.device('0')
         torch.manual_seed(0)
@@ -31,12 +34,12 @@ if __name__ == '__main__':
                     data_generator.n_items,
                     norm_adj,
                     args).to(args.device)
-
+        model_file_prefix = f"ngcf-{args.dataset}-{len(args.layer_size)}-{args.embed_size}-{args.batch_size}-{args.lr}"
         if int(args.pretrain)!=0:
             import glob
             import os
 
-            list_of_files = glob.glob(args.weights_path+"/*pdparams") # * means all if need specific format then *.csv
+            list_of_files = glob.glob(args.weights_path+"/%s*pdparams"%model_file_prefix) # * means all if need specific format then *.csv
             if len(list_of_files)>0:
                 model_fn = max(list_of_files, key=os.path.getctime)
                 model.load_state_dict(torch.load(model_fn))
@@ -127,13 +130,13 @@ if __name__ == '__main__':
             cur_best_pre_0, stopping_step, should_stop = early_stopping(ret['recall'][0], cur_best_pre_0,
                                                                         stopping_step, expected_order='acc', flag_step=5)
 
-            ###stop if the satisfy the criteria
-            if  "amazon" in args.dataset:
-                if float(ret['recall'][0])>0.0337  and float(ret['ndcg'][0])>0.0261:
-                    break
-            if  "yelp" in args.dataset:
-                if float(ret['recall'][0])>0.0579 and float(ret['ndcg'][0])>0.0477:
-                    break
+            # ###stop if the satisfy the criteria
+            # if  "amazon" in args.dataset:
+            #     if float(ret['recall'][0])>0.0337  and float(ret['ndcg'][0])>0.0261:
+            #         break
+            # if  "yelp" in args.dataset:
+            #     if float(ret['recall'][0])>0.0579 and float(ret['ndcg'][0])>0.0477:
+            #         break
 
             # *********************************************************
             # early stopping when cur_best_pre_0 is decreasing for ten successive steps.
@@ -143,8 +146,8 @@ if __name__ == '__main__':
             # *********************************************************
             # save the user & item embeddings for pretraining.
             if ret['recall'][0] == cur_best_pre_0 and args.save_flag == 1:
-                torch.save(model.state_dict(), args.weights_path + str(epoch) + '.pkl')
-                print('save the weights in path: ', args.weights_path + str(epoch) + '.pkl')
+                torch.save(model.state_dict(), args.weights_path + str(model_file_prefix) )
+                print('save the weights in path: ', args.weights_path + str(model_file_prefix) )
 
         recs = np.array(rec_loger)
         pres = np.array(pre_loger)
