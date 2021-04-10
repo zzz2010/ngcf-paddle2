@@ -50,7 +50,7 @@ def get_auc(item_score, user_pos_test):
             r.append(1)
         else:
             r.append(0)
-    auc = metrics.auc(ground_truth=r, prediction=posterior)
+    auc = metrics.AUC(ground_truth=r, prediction=posterior)
     return auc
 
 def ranklist_by_sorted(user_pos_test, test_items, rating, Ks):
