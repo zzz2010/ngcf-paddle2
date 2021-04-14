@@ -83,7 +83,7 @@ if __name__ == '__main__':
                 optimizer.zero_grad()
                 batch_loss.backward()
                 
-                pbar.set_description("loss:%.2f , %.2f"%(batch_mf_loss, batch_emb_loss ))
+                pbar.set_description("loss:%.4f , %.4f"%(batch_mf_loss, batch_emb_loss ))
                 
                 optimizer.minimize(batch_loss)
 
