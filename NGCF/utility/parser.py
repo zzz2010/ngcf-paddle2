@@ -57,6 +57,9 @@ def parse_args():
     parser.add_argument('--save_flag', type=int, default=0,
                         help='0: Disable model saver, 1: Activate model saver')
 
+    parser.add_argument('--eval_epoch', type=int, default=10,
+                        help='number of training epoch to evaluate once')
+
     parser.add_argument('--test_flag', nargs='?', default='full',
                         help='Specify the test type from {part, full}, indicating whether the reference is done in mini-batch')
 

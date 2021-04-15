@@ -95,7 +95,7 @@ if __name__ == '__main__':
             test_log.add_scalar(step=epoch,tag="train/loss",value=float(loss))
             test_log.add_scalar(step=epoch,tag="train/emb_loss",value=float(emb_loss))
 
-            if (epoch + 1) % 10 != 0:
+            if (epoch + 1) % args.eval_epoch != 0:
                 if args.verbose > 0 and epoch % args.verbose == 0:
                     perf_str = 'Epoch %d [%.1fs]: train==[%.5f=%.5f + %.5f]' % (
                         epoch, time() - t1, loss, mf_loss, emb_loss)

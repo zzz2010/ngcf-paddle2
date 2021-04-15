@@ -1,1 +1,1 @@
-python main.py --dataset gowalla  --gpu_id 0 --regs [1e-5] --embed_size 64 --layer_size [64,64,64] --lr 0.0005 --save_flag 1 --pretrain -1 --batch_size 10240 --epoch 200 --verbose 50 --node_dropout [0.0] --mess_dropout [0.1,0.1,0.1]
+python main.py --dataset gowalla  --gpu_id 0 --regs [1e-5] --embed_size 64 --layer_size [64,64,64] --lr 0.0005 --eval_epoch 2 --save_flag 1 --pretrain -1 --batch_size 10240 --epoch 200 --verbose 50 --node_dropout [0.0] --mess_dropout [0.1,0.1,0.1]
