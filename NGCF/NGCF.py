@@ -108,7 +108,7 @@ class NGCF(nn.Module):
                        + torch.norm(pos_items) ** 2
                        + torch.norm(neg_items) ** 2) / 2
         emb_loss = self.decay * regularizer / self.batch_size
-
+        #tensorflow code regloss is always 0, so not include here
         return mf_loss + emb_loss, mf_loss, emb_loss
 
     def rating(self, u_g_embeddings, pos_i_g_embeddings):
@@ -127,6 +127,7 @@ class NGCF(nn.Module):
                                      self.sparse_norm_adj._nnz()  ) if drop_flag else self.sparse_norm_adj
  
         A_hat.stop_gradient=True
+        ##tensorflow by default will split the sparse matrix to 100 per chunck
 
         ego_embeddings = torch.cat([self.embedding_dict['user_emb'],
                                     self.embedding_dict['item_emb']], 0)
@@ -138,21 +139,22 @@ class NGCF(nn.Module):
             side_embeddings = torch.sparse.mm(A_hat, ego_embeddings)
 
             # transformed sum messages of neighbors.
-            sum_embeddings = torch.matmul(side_embeddings,   self.weight_dict['W_gc_%d' % k] ,transpose_y=True )\
-                                             + self.weight_dict['b_gc_%d' % k]
+            sum_embeddings = nn.LeakyReLU(negative_slope=0.2)(torch.matmul(side_embeddings,   self.weight_dict['W_gc_%d' % k] ,transpose_y=True )\
+                                             + self.weight_dict['b_gc_%d' % k])
 
 
             # bi messages of neighbors.
             # element-wise product
             bi_embeddings = torch.mul(ego_embeddings, side_embeddings)
             # transformed bi messages of neighbors.
-            bi_embeddings = torch.matmul(bi_embeddings,  self.weight_dict['W_bi_%d' % k] ,transpose_y=True  )\
-                                            + self.weight_dict['b_bi_%d' % k]
+            ##move LeakyReLU up to be consistent with tensorflow code
+            bi_embeddings = nn.LeakyReLU(negative_slope=0.2)(torch.matmul(bi_embeddings,  self.weight_dict['W_bi_%d' % k] ,transpose_y=True  )\
+                                            + self.weight_dict['b_bi_%d' % k])
 
             # non-linear activation.
-            # print("bi_embeddings2 paddle", torch.argmax( bi_embeddings))
 
-            ego_embeddings = nn.LeakyReLU(negative_slope=0.2)(sum_embeddings + bi_embeddings)
+
+            ego_embeddings = sum_embeddings + bi_embeddings
             # message dropout.
             ego_embeddings = nn.Dropout(self.mess_dropout[k])(ego_embeddings)
 
