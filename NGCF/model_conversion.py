@@ -57,6 +57,8 @@ if __name__ == '__main__':
                                                                  pos_items,
                                                                  neg_items,
                                                                  drop_flag=args.node_dropout_flag)
+
+  print("FINAL torch:",torch.argmax(u_g_embeddings_torch))
   batch_loss_torch, _, _ = torch_model.create_bpr_loss(u_g_embeddings_torch,
                                                                     pos_i_g_embeddings_torch,
                                                                     neg_i_g_embeddings_torch)
@@ -69,12 +71,13 @@ if __name__ == '__main__':
                                                                  pos_items,
                                                                  neg_items,
                                                                  drop_flag=args.node_dropout_flag)
+  print("FINAL paddle:", paddorch.argmax(u_g_embeddings_paddle))
   start = time()
   batch_loss_paddle, _, _ = paddle_model.create_bpr_loss(u_g_embeddings_paddle,
                                                                     pos_i_g_embeddings_paddle,
                                                                     neg_i_g_embeddings_paddle)
   print("forward time:", time() - start)
-  print("forward output,max diff:", np.max(np.abs(u_g_embeddings_paddle.detach().numpy() - batch_loss_paddle.detach().numpy())))
+  print("forward output,max diff:", np.max(np.abs(u_g_embeddings_paddle.detach().numpy() - u_g_embeddings_torch.cpu().detach().numpy())))
 
   start = time()
   batch_loss_paddle.backward()

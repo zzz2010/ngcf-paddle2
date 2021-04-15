@@ -136,37 +136,28 @@ class NGCF(nn.Module):
 
         for k in range(len(self.layers)):
             side_embeddings = torch.sparse.mm(A_hat, ego_embeddings)
-            # print("side_embeddings paddle", torch.argmax(side_embeddings))
 
             # transformed sum messages of neighbors.
-            sum_embeddings = torch.matmul(side_embeddings, torch.transpose(  self.weight_dict['W_gc_%d' % k],1,0 ) )\
+            sum_embeddings = torch.matmul(side_embeddings,   self.weight_dict['W_gc_%d' % k] ,transpose_y=True )\
                                              + self.weight_dict['b_gc_%d' % k]
 
-
-            # print("paddorch weight",torch.argmax(torch.transpose(  self.weight_dict['W_gc_%d' % k],1,0 )),torch.argmax(self.weight_dict['b_gc_%d' % k]  ))
-
-            # print("sum_embeddings paddle", sum_embeddings.sum())
 
             # bi messages of neighbors.
             # element-wise product
             bi_embeddings = torch.mul(ego_embeddings, side_embeddings)
-            # print("bi_embeddings1 paddle", torch.argmax(bi_embeddings))
             # transformed bi messages of neighbors.
-            bi_embeddings = torch.matmul(bi_embeddings,  torch.transpose(self.weight_dict['W_bi_%d' % k],1,0 )  )\
+            bi_embeddings = torch.matmul(bi_embeddings,  self.weight_dict['W_bi_%d' % k] ,transpose_y=True  )\
                                             + self.weight_dict['b_bi_%d' % k]
 
-            # print("paddorch weight",torch.argmax(  torch.transpose(self.weight_dict['W_bi_%d' % k],1,0 )  ) ,torch.argmax(self.weight_dict['b_bi_%d' % k]  ))
             # non-linear activation.
             # print("bi_embeddings2 paddle", torch.argmax( bi_embeddings))
 
             ego_embeddings = nn.LeakyReLU(negative_slope=0.2)(sum_embeddings + bi_embeddings)
-            # print("ego_embeddings paddle", ego_embeddings.sum())
             # message dropout.
             ego_embeddings = nn.Dropout(self.mess_dropout[k])(ego_embeddings)
 
             # normalize the distribution of embeddings.
             norm_embeddings = F.normalize(ego_embeddings, p=2, dim=1)
-            # print("norm_embeddings paddle", norm_embeddings.sum())
 
             all_embeddings += [norm_embeddings]
 
