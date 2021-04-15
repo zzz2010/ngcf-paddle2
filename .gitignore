@@ -1,2 +1,4 @@
 NGCF/log
 NGCF/model
+*.pkl
+*.pdparams
