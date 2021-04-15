@@ -1,4 +1,11 @@
 
+虽然是基于非官方的pytorch 版本改编
+ 
+对比了非官方的pytorch和官方的tensorflow的代码， 有两个区别：
+1. tf 用split， 就是把user 分为100人一组，分开计算再合拼，  torch 没有split。但我觉得最后结果一样
+2. leakyRELU的位置不一样， tf是relu后相加， torch是加后再relu  
+
+修改了leakyRELU的位置,最后我们的paddle 版本可以跟官方版本完全对齐
 
 ### 复现结果要点
 1、使用的数据集、模型文件及完整的复现代码

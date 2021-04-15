@@ -86,7 +86,7 @@ class Data(object):
             adj_mat = sp.load_npz(self.path + '/s_adj_mat.npz')
             norm_adj_mat = sp.load_npz(self.path + '/s_norm_adj_mat.npz')
             mean_adj_mat = sp.load_npz(self.path + '/s_mean_adj_mat.npz')
-            print('already load adj matrix', adj_mat.shape, time() - t1)
+            print('already load adj matrix', adj_mat.shape,np.mean(norm_adj_mat), time() - t1)
 
         except Exception:
             adj_mat, norm_adj_mat, mean_adj_mat = self.create_adj_mat()
@@ -104,7 +104,7 @@ class Data(object):
         adj_mat[:self.n_users, self.n_users:] = R
         adj_mat[self.n_users:, :self.n_users] = R.T
         adj_mat = adj_mat.todok()
-        print('already create adjacency matrix', adj_mat.shape, time() - t1)
+        print('already create adjacency matrix', adj_mat.shape,np.mean(adj_mat), time() - t1)
 
         t2 = time()
 
