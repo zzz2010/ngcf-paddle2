@@ -116,13 +116,12 @@ if __name__ == '__main__':
             ndcg_loger.append(ret['ndcg'])
             hit_loger.append(ret['hit_ratio'])
 
-            if args.verbose > 0:
-                perf_str = 'Epoch %d [%.1fs + %.1fs]: train==[%.5f=%.5f + %.5f], recall=[%.5f, %.5f], ' \
-                        'precision=[%.5f, %.5f], hit=[%.5f, %.5f], ndcg=[%.5f, %.5f]' % \
-                        (epoch, t2 - t1, t3 - t2, loss, mf_loss, emb_loss, ret['recall'][0], ret['recall'][-1],
-                            ret['precision'][0], ret['precision'][-1], ret['hit_ratio'][0], ret['hit_ratio'][-1],
-                            ret['ndcg'][0], ret['ndcg'][-1])
-                print(perf_str)
+            perf_str = 'Epoch %d [%.1fs + %.1fs]: train==[%.5f=%.5f + %.5f], recall=[%.5f, %.5f], ' \
+                    'precision=[%.5f, %.5f], hit=[%.5f, %.5f], ndcg=[%.5f, %.5f]' % \
+                    (epoch, t2 - t1, t3 - t2, loss, mf_loss, emb_loss, ret['recall'][0], ret['recall'][-1],
+                        ret['precision'][0], ret['precision'][-1], ret['hit_ratio'][0], ret['hit_ratio'][-1],
+                        ret['ndcg'][0], ret['ndcg'][-1])
+            print(perf_str)
 
             test_log.add_scalar(step=epoch,tag="test/recall@20",value=float(ret['recall'][0]))
             test_log.add_scalar(step=epoch,tag="test/precision@20",value=float(ret['precision'][0]))
