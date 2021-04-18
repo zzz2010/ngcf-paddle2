@@ -64,7 +64,10 @@ if __name__ == '__main__':
             t1 = time()
             loss, mf_loss, emb_loss = 0., 0., 0.
             n_batch = data_generator.n_train // args.batch_size + 1
-            pbar=tqdm.trange(n_batch)
+            if args.verbose>0:
+                pbar=tqdm.trange(n_batch)
+            else:
+                pbar=range(n_batch)
             for idx in pbar:
                 t1_pre = time()
                 users, pos_items, neg_items = data_generator.sample()
@@ -82,8 +85,8 @@ if __name__ == '__main__':
                 # print(' backward time:' ,time()-t1_end)
                 optimizer.zero_grad()
                 batch_loss.backward()
-                
-                pbar.set_description("loss:%.4f , %.4f"%(batch_mf_loss, batch_emb_loss ))
+                if args.verbose > 0:
+                    pbar.set_description("loss:%.4f , %.4f"%(batch_mf_loss, batch_emb_loss ))
                 
                 optimizer.minimize(batch_loss)
 
@@ -96,10 +99,9 @@ if __name__ == '__main__':
             test_log.add_scalar(step=epoch,tag="train/emb_loss",value=float(emb_loss))
 
             if (epoch + 1) % args.eval_epoch != 0:
-                if args.verbose > 0 and epoch % args.verbose == 0:
-                    perf_str = 'Epoch %d [%.1fs]: train==[%.5f=%.5f + %.5f]' % (
-                        epoch, time() - t1, loss, mf_loss, emb_loss)
-                    print(perf_str)
+                perf_str = 'Epoch %d [%.1fs]: train==[%.5f=%.5f + %.5f]' % (
+                    epoch, time() - t1, loss, mf_loss, emb_loss)
+                print(perf_str)
                 continue
 
             t2 = time()

@@ -38,7 +38,8 @@ if __name__ == '__main__':
         model.load_state_dict(torch.load(model_fn))
         print("loaded model file:", model_fn)
 
-
+        ##eval mode
+        model.eval()
 
         t0 = time()
         """
