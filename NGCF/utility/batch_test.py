@@ -111,7 +111,7 @@ def test_one_user(x):
 def test(model, users_to_test, drop_flag=False, batch_test_flag=False):
     result = {'precision': np.zeros(len(Ks)), 'recall': np.zeros(len(Ks)), 'ndcg': np.zeros(len(Ks)),
               'hit_ratio': np.zeros(len(Ks)), 'auc': 0.}
-
+    model.eval()   ##  to eval mode
     pool = multiprocessing.Pool(cores)
 
     u_batch_size = BATCH_SIZE * 2
@@ -191,4 +191,5 @@ def test(model, users_to_test, drop_flag=False, batch_test_flag=False):
 
     assert count == n_test_users
     pool.close()
+    model.train() ##back to train mode
     return result
