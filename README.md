@@ -1,22 +1,24 @@
 
-虽然是基于非官方的pytorch 版本改编
+
+### 团队成员： 小木桌，chf544062970， 江江123
+### 复现结果要点
+'''
+虽然是基于非官方的[pytorch版本](https://github.com/huangtinglin/NGCF-PyTorch)改编
  
 对比了非官方的pytorch和官方的tensorflow的代码， 有两个区别：
 1. tf 用split， 就是把user 分为100人一组，分开计算再合拼，  torch 没有split。但我觉得最后结果一样
 2. leakyRELU的位置不一样， tf是relu后相加， torch是加后再relu  
+修改了leakyRELU的位置,最后我们的paddle 版本可以跟[官方Tensorflow版本](https://github.com/xiangwang1223/neural_graph_collaborative_filtering)完全对齐
+'''
 
-修改了leakyRELU的位置,最后我们的paddle 版本可以跟官方版本完全对齐
-
-### 复现结果要点
 1、使用的数据集、模型文件及完整的复现代码
 
-- `数据集` ： 采用 Amazon book 和 Yelp2018 在github上面下载的
+- `数据集` ： 采用 Amazon book 和 Gowalla 在github上面下载的
 - `完整的复现代码` 在这个项目的folder：NGCF-Paddle (论文实现代码)，  paddorch (提供pytorch接口的paddle实现)
 
 关于我写的torch接口代码请参考 [pytorch 转 paddle 心得](https://blog.csdn.net/weixin_48733317/article/details/108176827)
 有兴趣了解的朋友可以看我在这个[视频](https://aistudio.baidu.com/aistudio/education/lessonvideo/698277)的Paddorch介绍（10分钟位置开始），
 之前我用paddorch库复现了3个GAN类别的项目。
-
 
 值得注意的是虽然说这个是NGCF的paddle版本，但你基本上看不到paddle api接口，因为都被我在paddorch库中重新封装了， 所以代码看起来就跟torch一样 
 
@@ -30,37 +32,43 @@
 
 (2) 训练脚本/代码，最好包含训练一个epoch的运行日志
 
-- 在下面的cell 中有从零开始训练的代码 ，因为算力卡不够，中途停了，后面从上checkpoint 开始继续训练
-- `main.py` 是入口文件， 跟官方代码一样接口，参考[pytorch repo](https://github.com/huangtinglin/NGCF-PyTorch)
+- 在下面的cells 包含10个epoch的训练示例，和所有训练的命令行（完整训练记录参考下面） 
+- `main.py` 是入口文件， 参数接口跟官方代码一样接口，参考[官方Tensorflow版本](https://github.com/xiangwang1223/neural_graph_collaborative_filtering)
+- 我们用了下面2个项目来训练2个不同的数据集，请点击每个项目来查看完整的训练记录
+1. [Amazon-book](https://aistudio.baidu.com/aistudio/clusterprojectdetail/1781368) 脚本训练项目
+2. [Gowalla](https://aistudio.baidu.com/aistudio/projectdetail/1792581) notebook 训练项目
 
+
+另外，我们通过两个阶段不同学习率的训练，第一个阶段用大的learning rate 1e-3和默认的batch size (1024). 第二阶段（finetune）用很小的learning rate 1e-4和较大的batch size (10240)。
 
 (3) 测试脚本/代码，必须包含评估得到最终精度的运行日志
 
 - 原来的官方代码没有独立的测试脚本，测试是包含在training script里面，每10 epoch evaluation 一次，所以在训练的log中
-看到 recall， precision， hit， ndcg 都是测试集的metric 分别对于k=20 和k=100
-- 我单独写一个测试脚本 `test.py dataset model_file` 输出recall@20, NDCG@20 
+看到 recall， precision  ndcg 都是测试集的metric , k=20 
+- 我单独写一个测试脚本 `python eval_model.py --dataset [dataset] --path [model_file]` 输出recall@20, NDCG@20, Precision@20
+
+
 
 
 (4) 最终精度，如精度相比源码有提升，需要说明精度提升用到的方法与技巧(不可更换网络主体结构，不可将测试集用于训练)
 
 #### Amazon book Recall@20是X， 验收要求 0.0337
 #### Amazon book NDCG@20是X， 验收要求 0.0261
-#### Yelp2018 Recall@20是X， 验收要求 0.0579
-#### Yelp2018 NDCG@20是X， 验收要求 0.0477
-
- 
+#### Gowalla Recall@20是X， 验收要求 0.1569
+#### Gowalla NDCG@20是X， 验收要求 0.1327
 
 
 
 (5) 其它学员觉得需要说明的地方
 - 记得安装paddorch库， `cd paddorch;pip install .`
-- 关键点可以看我实现的paddorch.sparse.mm 函数
+- 关键点可以看我实现的paddorch.sparse.mm 函数,用了nn.functional.embedding 
+- leakyRelu 的位置
 
 3、上传最终训练好的模型文件
-- 在`NGCF-Paddle/NGCF/amazon_book_checkpoints` 和 `NGCF-Paddle/NGCF/yelp2018_checkpoints`
+- 在`ngcf-paddle/NGCF/model` 
 
 4、如评估结果保存在json文件中，可上传最终评估得到的json文件
-没有生成json文件， 但可以下载visualdl`NGCF-Paddle/NGCF/log` 目录进行评价
+没有生成json文件， 但可以下载visualdl`ngcf-paddle/NGCF/log` 目录进行评价
 
 
  
