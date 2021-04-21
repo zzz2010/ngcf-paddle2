@@ -106,7 +106,7 @@ if __name__ == '__main__':
 
             t2 = time()
             users_to_test = list(data_generator.test_set.keys())
-            ret = test(model, users_to_test, drop_flag=False)
+            ret = test(model, users_to_test, drop_flag=False,batch_test_flag=(args.test_flag=="full"))
 
             t3 = time()
 

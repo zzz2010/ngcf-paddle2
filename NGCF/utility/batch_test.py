@@ -162,6 +162,7 @@ def test(model, users_to_test, drop_flag=False, batch_test_flag=False):
 
         else:
             # all-item test
+            print("full test evaluation mode")
             item_batch = list(range(ITEM_NUM))
 
             if drop_flag == False:
