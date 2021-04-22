@@ -76,7 +76,7 @@ def get_performance(user_pos_test, r, auc, Ks):
     for K in Ks:
         precision.append(metrics.precision_at_k(r, K))
         recall.append(metrics.recall_at_k(r, K, len(user_pos_test)))
-        ndcg.append(metrics.ndcg_at_k(r, K, user_pos_test))
+        ndcg.append(metrics.ndcg_at_k(r, K))
         hit_ratio.append(metrics.hit_at_k(r, K))
 
     return {'recall': np.array(recall), 'precision': np.array(precision),
@@ -162,7 +162,6 @@ def test(model, users_to_test, drop_flag=False, batch_test_flag=False):
 
         else:
             # all-item test
-            print("full test evaluation mode")
             item_batch = list(range(ITEM_NUM))
 
             if drop_flag == False:
