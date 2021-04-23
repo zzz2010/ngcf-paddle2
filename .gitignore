@@ -1,5 +1,4 @@
 NGCF/log
 NGCF/model
 *.pkl
-*.pdparams
 NGCF/utility/__pycache__

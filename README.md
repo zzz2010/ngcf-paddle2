@@ -59,7 +59,9 @@
 #### Gowalla Recall@20是0.15850， 验收要求 0.1569
 #### Gowalla NDCG@20是0.13452， 验收要求 0.1327
 
+NDCG 比百度验收要求高很多的原因是，百度用的预印版的数据，而作者正式发表的[SIGIR ’19的论文](http://staff.ustc.edu.cn/~hexn/papers/sigir19-NGCF.pdf) Table 2数据，NDCG高很多，也跟官方的tensorflow版本输出符合。
 
+我们的recall比论文有提高是因为我们在原始训练后，再做了finetuning (用了非常小的learning rate和 没dropout).
 
 (5) 其它学员觉得需要说明的地方
 - 记得安装paddorch库， `cd paddorch;pip install .`
