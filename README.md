@@ -2,16 +2,17 @@
 
 ### 团队成员： 小木桌，chf544062970， 江江123
 ### 复现结果要点
-'''
-虽然是基于非官方的 [pytorch版本](https://github.com/huangtinglin/NGCF-PyTorch) 改编
+```
+本实现是基于非官方的 [pytorch版本](https://github.com/huangtinglin/NGCF-PyTorch) 改编，最后完全对齐官方的tensorflow版本
  
 对比了非官方的pytorch和官方的tensorflow的代码， 主要有3个区别：
-1. tf 用split， 就是把user 分为100人一组，分开计算再合拼，  torch 没有split。但我觉得最后结果一样
+1. tf 用split， 就是把user 分为100人一组，分开计算再合拼，  torch 没有split。但split的方案是为了节省显存，但最后结果一样
 2. leakyRELU的位置不一样， tf是relu后相加， torch是加后再relu  
-修改了leakyRELU的位置,最后我们的paddle 版本可以跟 [官方Tensorflow版本](https://github.com/xiangwang1223/neural_graph_collaborative_filtering) 完全对齐
+修改了leakyRELU的位置,最后我们的paddle 版本可以跟 [官方Tensorflow版本](https://github.com/xiangwang1223/neural_graph_collaborative_filtering) 完全对齐 （通过forward，backward test）
    
 3. metric.py 里面的ndcg_at_k 函数 pytorch版本跟官方版本不一致， 我们改用 [官方Tensorflow版本](https://github.com/xiangwang1223/neural_graph_collaborative_filtering) ， 并且测试了所有评价metric跟官方版本完全对齐
-'''
+
+```
 
 1、使用的数据集、模型文件及完整的复现代码
 
@@ -37,7 +38,7 @@
 - 在下面的cells 包含10个epoch的训练示例，和所有训练的命令行（完整训练记录参考下面） 
 - `main.py` 是入口文件， 参数接口跟官方代码一样接口，参考[官方Tensorflow版本](https://github.com/xiangwang1223/neural_graph_collaborative_filtering)
 - 我们用了下面2个项目来训练2个不同的数据集，请点击每个项目来查看完整的训练记录
-1. [Amazon-book](https://aistudio.baidu.com/aistudio/clusterprojectdetail/1781368) 脚本训练项目
+1. [Amazon-book](https://aistudio.baidu.com/aistudio/projectdetail/1853657) notebook 训练项目
 2. [Gowalla](https://aistudio.baidu.com/aistudio/projectdetail/1757465) notebook 训练项目
 
 
@@ -54,14 +55,14 @@
 
 (4) 最终精度，如精度相比源码有提升，需要说明精度提升用到的方法与技巧(不可更换网络主体结构，不可将测试集用于训练)
 
-#### Amazon book Recall@20是X， 验收要求 0.0337
-#### Amazon book NDCG@20是X， 验收要求 0.0261
+#### Amazon book Recall@20是0.03373， 验收要求 0.0337
+#### Amazon book NDCG@20是0.06286， 验收要求 0.0261
 #### Gowalla Recall@20是0.15850， 验收要求 0.1569
 #### Gowalla NDCG@20是0.13452， 验收要求 0.1327
 
 NDCG 比百度验收要求高很多的原因是，百度用的预印版的数据，而作者正式发表的[SIGIR ’19的论文](http://staff.ustc.edu.cn/~hexn/papers/sigir19-NGCF.pdf) Table 2数据，NDCG高很多，也跟官方的tensorflow版本输出符合。
 
-我们的recall比论文有提高是因为我们在原始训练后，再做了finetuning (用了非常小的learning rate和 没dropout).
+我们的recall比论文有略有提高是因为我们在原始训练后，再做了finetuning (用了非常小的learning rate和 没dropout).
 
 (5) 其它学员觉得需要说明的地方
 - 记得安装paddorch库， `cd paddorch;pip install .`
