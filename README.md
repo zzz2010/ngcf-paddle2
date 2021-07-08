@@ -3,7 +3,7 @@
 ## This is replementation of NGCF using DL framework [PaddlePaddle](https://github.com/PaddlePaddle/Paddle).
 
 
-### This repo is modified based on original BigGAN [pytorch version](https://github.com/huangtinglin/NGCF-PyTorch).
+### This repo is modified based on original [pytorch version](https://github.com/huangtinglin/NGCF-PyTorch).
 
 ### Dependency
 [Paddorch](https://github.com/zzz2010/paddorch)
