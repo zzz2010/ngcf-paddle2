@@ -1,84 +1,12 @@
 
 
-### 团队成员： 小木桌，chf544062970， 江江123
-### 复现结果要点
-```
-本实现是基于非官方的 [pytorch版本](https://github.com/huangtinglin/NGCF-PyTorch) 改编，最后完全对齐官方的tensorflow版本
- 
-对比了非官方的pytorch和官方的tensorflow的代码， 主要有3个区别：
-1. tf 用split， 就是把user 分为100人一组，分开计算再合拼，  torch 没有split。但split的方案是为了节省显存，但最后结果一样
-2. leakyRELU的位置不一样， tf是relu后相加， torch是加后再relu  
-修改了leakyRELU的位置,最后我们的paddle 版本可以跟 [官方Tensorflow版本](https://github.com/xiangwang1223/neural_graph_collaborative_filtering) 完全对齐 （通过forward，backward test）
-   
-3. metric.py 里面的ndcg_at_k 函数 pytorch版本跟官方版本不一致， 我们改用 [官方Tensorflow版本](https://github.com/xiangwang1223/neural_graph_collaborative_filtering) ， 并且测试了所有评价metric跟官方版本完全对齐
-
-```
-
-1、使用的数据集、模型文件及完整的复现代码
-
-- `数据集` ： 采用 Amazon book 和 Gowalla 在github上面下载的
-- `完整的复现代码` 在这个项目的folder：NGCF-Paddle (论文实现代码)，  paddorch (提供pytorch接口的paddle实现)
-
-关于我写的torch接口代码请参考 [pytorch 转 paddle 心得](https://blog.csdn.net/weixin_48733317/article/details/108176827)
-有兴趣了解的朋友可以看我在这个[视频](https://aistudio.baidu.com/aistudio/education/lessonvideo/698277)的Paddorch介绍（10分钟位置开始），
-之前我用paddorch库复现了3个GAN类别的项目。
-
-值得注意的是虽然说这个是NGCF的paddle版本，但你基本上看不到paddle api接口，因为都被我在paddorch库中重新封装了， 所以代码看起来就跟torch一样 
+## This is replementation of NGCF using DL framework [PaddlePaddle](https://github.com/PaddlePaddle/Paddle).
 
 
-2、提供具体详细的说明文档(或notebook)，内容包括:
+### This repo is modified based on original BigGAN [pytorch version](https://github.com/huangtinglin/NGCF-PyTorch).
 
-(1) 数据准备与预处理步骤
-
-- 数据直接挂载和解压，没有其他预处理步骤
- 
-
-(2) 训练脚本/代码，最好包含训练一个epoch的运行日志
-
-- 在下面的cells 包含10个epoch的训练示例，和所有训练的命令行（完整训练记录参考下面） 
-- `main.py` 是入口文件， 参数接口跟官方代码一样接口，参考[官方Tensorflow版本](https://github.com/xiangwang1223/neural_graph_collaborative_filtering)
-- 我们用了下面2个项目来训练2个不同的数据集，请点击每个项目来查看完整的训练记录
-1. [Amazon-book](https://aistudio.baidu.com/aistudio/projectdetail/1853657) notebook 训练项目
-2. [Gowalla](https://aistudio.baidu.com/aistudio/projectdetail/1757465) notebook 训练项目
-
-
-另外，我们通过两个阶段不同学习率的训练，第一个阶段用大的learning rate 1e-3和默认的batch size (1024). 第二阶段（finetune）用很小的learning rate 1e-4和较大的batch size (10240)。
-
-(3) 测试脚本/代码，必须包含评估得到最终精度的运行日志
-
-- 原来的官方代码没有独立的测试脚本，测试是包含在training script里面，每10 epoch evaluation 一次，所以在训练的log中
-看到 recall， precision  ndcg 都是测试集的metric , k=20 
-- 我单独写一个测试脚本 `python eval_model.py --dataset [dataset] --path [model_file]` 输出recall@20, NDCG@20, Precision@20
-
-
-
-
-(4) 最终精度，如精度相比源码有提升，需要说明精度提升用到的方法与技巧(不可更换网络主体结构，不可将测试集用于训练)
-
-#### Amazon book Recall@20是0.03373， 验收要求 0.0337
-#### Amazon book NDCG@20是0.06286， 验收要求 0.0261
-#### Gowalla Recall@20是0.15857， 验收要求 0.1569
-#### Gowalla NDCG@20是0.22643， 验收要求 0.1327
-
-NDCG 比百度验收要求高很多的原因是，百度用的预印版的数据，而作者正式发表的[SIGIR ’19的论文](http://staff.ustc.edu.cn/~hexn/papers/sigir19-NGCF.pdf) Table 2数据，NDCG高很多，也跟官方的tensorflow版本输出符合。
-
-我们的recall比论文有略有提高是因为我们在原始训练后，再做了finetuning (用了非常小的learning rate和 没dropout).
-
-(5) 其它学员觉得需要说明的地方
-- 记得安装paddorch库， `cd paddorch;pip install .`
-- 关键点可以看我实现的paddorch.sparse.mm 函数,用了nn.functional.embedding 
-- leakyRelu 的位置
-
-3、上传最终训练好的模型文件
-- 在`ngcf-paddle/NGCF/model` 
-
-4、如评估结果保存在json文件中，可上传最终评估得到的json文件
-没有生成json文件， 但可以下载visualdl`ngcf-paddle/NGCF/log` 目录进行评价
-
-
- 
-
-
+### Dependency
+[Paddorch](https://github.com/zzz2010/paddorch)
 
 
 =============================================================================================
